@@ -1,0 +1,3184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regent — Personal Finance Dashboard</title>
+    <meta
+      name="theme-color"
+      content="#0d1f17"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Regent" />
+    <meta
+      name="description"
+      content="Your private, offline-capable finance dashboard with editable APY inputs. Data saves in your browser."
+    />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23178A50'/%3E%3Cpath d='M7 22v-9l5 4.5L16 9l4 8.5L25 13v9Z' fill='%23fff'/%3E%3C/svg%3E"
+    />
+    <style>
+/* ============ Design tokens ============ */
+:root,
+[data-theme='light'] {
+  /* Surfaces — green-tinged neutrals */
+  --color-bg: #f6f8f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f4f2;
+  --color-surface-offset: #e8efeb;
+  --color-divider: #e5eae7;
+  --color-border: #dbe3de;
+
+  /* Text */
+  --color-text: #16261f;
+  --color-text-muted: #57685f;
+  --color-text-faint: #8fa199;
+
+  /* Primary — regent green */
+  --color-primary: #178a50;
+  --color-primary-hover: #106b3d;
+  --color-primary-active: #0b5330;
+  --color-primary-highlight: #dcf0e5;
+  --color-primary-soft: #eaf6ef;
+
+  /* Negative — clay */
+  --color-negative: #c04a2b;
+  --color-negative-hover: #9a3a20;
+  --color-negative-soft: #faece7;
+  --color-negative-highlight: #f4ddd4;
+
+  --color-gold: #b98a1c;
+  --color-gold-soft: #f9f1dd;
+
+  --color-blue: #2563a8;
+  --color-blue-soft: #e4edf8;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  --transition-interactive: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-sm: 0 1px 2px rgba(22, 38, 31, 0.06);
+  --shadow-md: 0 4px 14px rgba(22, 38, 31, 0.08);
+  --shadow-lg: 0 18px 48px rgba(22, 38, 31, 0.18);
+
+  --sidebar-bg: #ffffff;
+
+  /* Type scale */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
+  --text-base: clamp(0.9375rem, 0.9rem + 0.25vw, 1.0625rem);
+  --text-lg: clamp(1.0625rem, 0.98rem + 0.55vw, 1.375rem);
+  --text-xl: clamp(1.375rem, 1.2rem + 1.1vw, 2.25rem);
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --font-body: 'General Sans', -apple-system, 'Segoe UI', sans-serif;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0e1511;
+  --color-surface: #131b16;
+  --color-surface-2: #17211b;
+  --color-surface-offset: #1c2721;
+  --color-divider: #1f2b24;
+  --color-border: #27352d;
+
+  --color-text: #e4ebe6;
+  --color-text-muted: #96a69d;
+  --color-text-faint: #5f7066;
+
+  --color-primary: #46bd7e;
+  --color-primary-hover: #58cc8c;
+  --color-primary-active: #2f9763;
+  --color-primary-highlight: #16301f;
+  --color-primary-soft: #17281e;
+
+  --color-negative: #e2693f;
+  --color-negative-hover: #ef7f57;
+  --color-negative-soft: #2c1a12;
+  --color-negative-highlight: #3a221a;
+
+  --color-gold: #d9a83c;
+  --color-gold-soft: #2a2110;
+
+  --color-blue: #5c9ddd;
+  --color-blue-soft: #12212f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+
+  --sidebar-bg: #131b16;
+}
+
+/* ============ Base ============ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  line-height: 1.55;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ============ App shell ============ */
+.app {
+  display: grid;
+  grid-template-columns: 236px 1fr;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.sidebar {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--color-divider);
+  padding: var(--space-5) var(--space-4);
+  gap: var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-2);
+}
+
+.brand-mark {
+  display: inline-flex;
+  color: var(--color-primary);
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+}
+
+.sidebar nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  text-align: left;
+  transition:
+    background var(--transition-interactive),
+    color var(--transition-interactive);
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.nav-item:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.nav-item.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .nav-item.active {
+  background: var(--color-primary-highlight);
+}
+
+.nav-chip {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full, 9999px);
+  padding: 0 var(--space-2);
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-2);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.user-plan {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+}
+
+.mobilebar,
+.bottomnav {
+  display: none;
+}
+
+/* ============ Main ============ */
+main {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-8) var(--space-10) var(--space-12);
+}
+
+@media (max-width: 900px) {
+  main {
+    padding: var(--space-5) var(--space-4) calc(var(--space-16) + var(--space-6));
+  }
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.greeting {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.greeting-sub {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.badge-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-gold);
+  background: var(--color-gold-soft);
+  border-radius: 9999px;
+  padding: var(--space-1) var(--space-3);
+}
+
+.head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.save-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-divider);
+  border-radius: 9999px;
+  padding: var(--space-2) var(--space-4);
+  white-space: nowrap;
+  transition:
+    background var(--transition-interactive),
+    color var(--transition-interactive),
+    border-color var(--transition-interactive);
+}
+
+.save-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-faint);
+}
+
+.save-pill.saving::before {
+  background: var(--color-gold);
+}
+
+.save-pill.saved {
+  color: var(--color-primary);
+  border-color: color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.save-pill.saved::before {
+  background: var(--color-primary);
+}
+
+.save-pill.error {
+  color: var(--color-negative);
+  border-color: color-mix(in oklab, var(--color-negative) 30%, transparent);
+}
+
+.save-pill.error::before {
+  background: var(--color-negative);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition:
+    background var(--transition-interactive),
+    border-color var(--transition-interactive),
+    color var(--transition-interactive),
+    box-shadow var(--transition-interactive);
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn.primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn.primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn.ghost {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+}
+
+.btn.ghost:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-faint);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition:
+    background var(--transition-interactive),
+    color var(--transition-interactive);
+}
+
+.icon-btn:hover {
+  color: var(--color-text);
+  background: var(--color-surface-2);
+}
+
+/* ============ Cards & grids ============ */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+}
+
+.card + .card {
+  margin-top: 0;
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.card-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.card-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.dash-row-2 {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+@media (max-width: 1100px) {
+  .dash-grid,
+  .dash-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
+
+/* KPI values */
+.kpi-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.kpi-value {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-top: var(--space-2);
+}
+
+.kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  margin-top: var(--space-2);
+}
+
+.kpi-delta.up {
+  color: var(--color-primary);
+}
+
+.kpi-delta.down {
+  color: var(--color-negative);
+}
+
+.kpi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+}
+
+.kpi-icon.green {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.kpi-icon.red {
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+}
+
+.kpi-icon.blue {
+  background: var(--color-blue-soft);
+  color: var(--color-blue);
+}
+
+.kpi-icon.slate { background: color-mix(in oklab, var(--color-text-muted) 14%, transparent); color: var(--color-text-muted); }
+.kpi-icon.gold {
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+}
+
+.kpi-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Chart */
+.chart-wrap {
+  margin-top: var(--space-5);
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  margin-top: var(--space-3);
+}
+
+/* Snapshot rows */
+.snap-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+}
+
+.snap-row + .snap-row {
+  border-top: 1px solid var(--color-divider);
+}
+
+.snap-row .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.snap-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.snap-count {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+}
+
+.snap-balance {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) 0;
+}
+
+.link-btn:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Interest outlook */
+.outlook-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.outlook-item {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.outlook-item .o-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.outlook-item .o-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-top: var(--space-1);
+  letter-spacing: -0.01em;
+}
+
+.o-value.pos {
+  color: var(--color-primary);
+}
+
+.o-value.neg {
+  color: var(--color-negative);
+}
+
+/* Transactions */
+.tx-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.tx-row + .tx-row {
+  border-top: 1px solid var(--color-divider);
+}
+
+.tx-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full, 9999px);
+  flex: none;
+}
+
+.tx-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tx-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.tx-meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  margin-top: 2px;
+}
+
+.tx-cat {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.tx-amount {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.tx-amount.in {
+  color: var(--color-primary);
+}
+
+/* ============ Accounts view ============ */
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .summary-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+.summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-card .s-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-card .s-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-top: var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+.s-value.pos {
+  color: var(--color-primary);
+}
+
+.s-value.neg {
+  color: var(--color-negative);
+}
+
+.s-foot {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  margin-top: var(--space-1);
+}
+
+.account-group {
+  margin-bottom: var(--space-6);
+}
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-2) var(--space-3);
+}
+
+.group-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.group-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+}
+
+.group-sub .pos {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.group-sub .neg {
+  color: var(--color-negative);
+  font-weight: 600;
+}
+
+.rows {
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.row-col-head {
+  display: grid;
+  grid-template-columns: 44px minmax(140px, 1fr) 120px 130px 88px 120px 40px;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-surface-2);
+}
+
+.account-row {
+  display: grid;
+  grid-template-columns: 44px minmax(140px, 1fr) 120px 130px 88px 120px 40px;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  transition: background var(--transition-interactive);
+}
+
+.row-meta {
+  display: contents;
+}
+
+.account-row + .account-row {
+  border-top: 1px solid var(--color-divider);
+}
+
+.account-row:hover {
+  background: var(--color-surface-2);
+}
+
+.acct-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  flex: none;
+}
+
+.acct-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.acct-icon.green { background: var(--color-primary-soft); color: var(--color-primary); }
+.acct-icon.red { background: var(--color-negative-soft); color: var(--color-negative); }
+.acct-icon.blue { background: var(--color-blue-soft); color: var(--color-blue); }
+.acct-icon.gold { background: var(--color-gold-soft); color: var(--color-gold); }
+.acct-icon.slate { background: color-mix(in oklab, var(--color-text-muted) 14%, transparent); color: var(--color-text-muted); }
+
+/* ---------- Goals & debt payoff ---------- */
+.goal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-5);
+}
+
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.goal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.goal-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.goal-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.goal-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.progress {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  transition: width var(--transition-interactive);
+}
+
+.goal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.mini-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+}
+
+.mini-field input {
+  width: 110px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 6px 8px;
+  font-size: var(--text-sm);
+}
+
+.mini-field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.goal-eta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-left: auto;
+  text-align: right;
+}
+
+.goal-mini {
+  padding: var(--space-2) 0;
+}
+
+.goal-mini-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  margin-bottom: 6px;
+}
+
+.goal-mini .goal-sub {
+  display: block;
+  margin-top: 6px;
+}
+
+.rank-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+  vertical-align: middle;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* Liquidity chip — a select styled as a small pill */
+.liq-sel {
+  margin-top: var(--space-1);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: 9999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 1px var(--space-2);
+  cursor: pointer;
+  transition: border-color var(--transition-interactive), color var(--transition-interactive);
+}
+
+.liq-sel:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.liq-sel:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.acct-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  line-height: 1.3;
+}
+
+.acct-inst {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  margin-top: 2px;
+}
+
+/* Rate input */
+.rate-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-3);
+  transition:
+    border-color var(--transition-interactive),
+    box-shadow var(--transition-interactive);
+}
+
+.rate-box:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.rate-box input {
+  width: 64px;
+  border: none;
+  background: transparent;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: right;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rate-box input::-webkit-outer-spin-button,
+.rate-box input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rate-box input:focus {
+  outline: none;
+}
+
+.rate-suffix {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.rate-na {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  background: var(--color-surface-2);
+}
+
+/* Interest / balance cells */
+.cell-interest {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.cell-interest .i-main {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.cell-interest .i-main.pos { color: var(--color-primary); }
+.cell-interest .i-main.neg { color: var(--color-negative); }
+.cell-interest .i-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+}
+
+.cell-balance {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  text-align: right;
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.bal-cur {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-text-faint);
+  margin-right: var(--space-1);
+  user-select: none;
+}
+
+.cell-balance.negative .bal-cur {
+  color: inherit;
+}
+
+.cell-balance.negative {
+  color: var(--color-negative);
+}
+
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-faint);
+  opacity: 0.55;
+  transition:
+    opacity var(--transition-interactive),
+    background var(--transition-interactive),
+    color var(--transition-interactive);
+}
+
+.delete-btn.visible,
+.account-row:hover .delete-btn,
+.delete-btn:focus-visible {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+}
+
+.delete-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Net-worth inclusion toggle */
+.nw-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.nw-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.nw-slider {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: var(--color-surface-offset);
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  transition: background var(--transition-interactive), border-color var(--transition-interactive);
+  flex: none;
+}
+.nw-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-text-faint);
+  transition: transform var(--transition-interactive), background var(--transition-interactive);
+}
+.nw-toggle input:checked + .nw-slider {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+.nw-toggle input:checked + .nw-slider::after {
+  transform: translateX(14px);
+  background: var(--color-primary);
+}
+.nw-label {
+  min-width: 2.4em;
+}
+
+/* Allocation bars */
+.alloc-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) 1fr auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3) 0;
+}
+.alloc-row + .alloc-row {
+  border-top: 1px solid var(--color-divider);
+}
+.alloc-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.alloc-bar-wrap {
+  height: 10px;
+  background: var(--color-surface-2);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.alloc-bar {
+  height: 100%;
+  border-radius: 9999px;
+  min-width: 2px;
+  transition: width var(--transition-interactive);
+}
+.alloc-val {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-align: right;
+  white-space: nowrap;
+}
+.alloc-pct {
+  font-weight: 500;
+  color: var(--color-text-faint);
+  font-size: var(--text-xs);
+  margin-left: 4px;
+}
+
+/* Balance input — looks like text until focused */
+.balance-input {
+  width: 100%;
+  max-width: 140px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-align: right;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  transition:
+    border-color var(--transition-interactive),
+    background var(--transition-interactive),
+    box-shadow var(--transition-interactive);
+}
+
+.balance-input::-webkit-outer-spin-button,
+.balance-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.balance-input:hover {
+  border-color: var(--color-border);
+}
+
+.balance-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.balance-input.negative {
+  color: var(--color-negative);
+}
+
+.clear-wrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-5) 0 var(--space-2);
+}
+
+.empty-note {
+  padding: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Empty states */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-16) var(--space-6);
+  max-width: 460px;
+  margin: var(--space-16) auto;
+}
+
+.empty-state h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.empty-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.empty-badge svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* ============ Modal ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 18, 14, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 50;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  width: min(520px, 100%);
+  padding: var(--space-8);
+  animation: modal-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.modal-head h2 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field.span-2 {
+  grid-column: 1 / -1;
+}
+
+.field > span {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.field input,
+.field select {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  width: 100%;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.field-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-divider);
+}
+
+.btn.danger {
+  color: var(--color-negative);
+  border-color: color-mix(in oklab, var(--color-negative) 40%, transparent);
+}
+
+.btn.danger:hover {
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+}
+
+/* ============ Responsive: mobile shell ============ */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .mobilebar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--color-divider);
+  }
+
+  .mobilebar .brand-name {
+    font-size: var(--text-base);
+  }
+
+  .mobilebar .badge-demo {
+    margin-left: auto;
+  }
+
+  .bottomnav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--sidebar-bg);
+    border-top: 1px solid var(--color-divider);
+    padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+    z-index: 30;
+  }
+
+  /* the mobilebar already shows the badge — avoid a duplicate */
+  .page-head .badge-demo {
+    display: none;
+  }
+
+  .bn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--color-text-faint);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+  }
+
+  .bn-item svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .bn-item.active {
+    color: var(--color-primary);
+  }
+
+  /* Account rows become stacked cards */
+  .row-col-head {
+    display: none;
+  }
+
+  .account-row {
+    grid-template-columns: 44px 1fr auto;
+    grid-template-areas:
+      'icon name balance'
+      'meta meta meta'
+      'nw nw action';
+    gap: var(--space-3);
+  }
+
+  .cell-icon {
+    grid-area: icon;
+  }
+
+  .cell-name {
+    grid-area: name;
+  }
+
+  .cell-balance {
+    grid-area: balance;
+  }
+
+  .row-meta {
+    grid-area: meta;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  .cell-rate,
+  .cell-interest {
+    flex: 0 0 auto;
+  }
+
+  .cell-nw {
+    grid-area: nw;
+  }
+
+  .cell-action {
+    grid-area: action;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="8" fill="currentColor" />
+              <path d="M7 22v-9l5 4.5L16 9l4 8.5L25 13v9Z" fill="#fff" />
+            </svg>
+          </span>
+          <span class="brand-name">Regent</span>
+        </div>
+        <nav>
+          <ul role="list" id="nav-list">
+            <li>
+              <button class="nav-item" data-view="dashboard" data-testid="nav-dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="12" width="7" height="5" rx="1.5"/></svg>
+                <span>Dashboard</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="accounts" data-testid="nav-accounts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h18v14"/><path d="M3 7v12a2 2 0 0 0 2 2h18v-6"/><path d="M17 9h6"/></svg>
+                <span>Accounts</span>
+                <span class="nav-chip" data-testid="nav-accounts-count">10</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="interest" data-testid="nav-interest">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                <span>Interest</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="payoff" data-testid="nav-payoff">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 13v4h-4"/></svg>
+                <span>Debt payoff</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="allocation" data-testid="nav-allocation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12A9 9 0 1 1 12 3v9Z"/><path d="M21 12h-9"/></svg>
+                <span>Allocation</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="stats" data-testid="nav-stats">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+                <span>Stats</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-view="goals" data-testid="nav-goals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+                <span>Goals</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="user">
+            <span class="avatar" aria-hidden="true">MF</span>
+            <div class="user-meta">
+              <span class="user-name" id="user-name">My finances</span>
+              <span class="user-plan">Personal edition</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="mobilebar" aria-hidden="true">
+        <span class="brand-mark">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="currentColor" />
+            <path d="M7 22v-9l5 4.5L16 9l4 8.5L25 13v9Z" fill="#fff" />
+          </svg>
+        </span>
+        <span class="brand-name">Regent</span>
+        <span class="badge-demo">My data</span>
+      </div>
+
+      <main id="main">
+        <div id="view-root"></div>
+      </main>
+    </div>
+
+    <nav class="bottomnav" aria-label="Mobile navigation">
+      <button data-view="dashboard" class="bn-item" data-testid="bn-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="12" width="7" height="5" rx="1.5"/></svg>
+        <span>Home</span>
+      </button>
+      <button data-view="accounts" class="bn-item" data-testid="bn-accounts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h18v14"/><path d="M3 7v12a2 2 0 0 0 2 2h18v-6"/><path d="M17 9h6"/></svg>
+        <span>Accounts</span>
+      </button>
+      <button data-view="interest" class="bn-item" data-testid="bn-interest">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+        <span>Interest</span>
+      </button>
+      <button data-view="allocation" class="bn-item" data-testid="bn-allocation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12A9 9 0 1 1 12 3v9Z"/><path d="M21 12h-9"/></svg>
+        <span>Alloc</span>
+      </button>
+      <button data-view="stats" class="bn-item" data-testid="bn-stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+        <span>Stats</span>
+      </button>
+    </nav>
+
+    <div class="modal-overlay" id="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head">
+          <h2 id="modal-title">Add account</h2>
+          <button class="icon-btn" id="modal-close" aria-label="Close" data-testid="button-modal-close">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <form id="add-account-form" novalidate>
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>Account name</span>
+              <input type="text" id="f-name" placeholder="e.g. High-Yield Savings" required data-testid="input-account-name" />
+            </label>
+            <label class="field span-2">
+              <span>Institution</span>
+              <input type="text" id="f-institution" placeholder="e.g. Ally Bank" required data-testid="input-account-institution" />
+            </label>
+            <label class="field">
+              <span>Account type</span>
+              <select id="f-type" data-testid="select-account-type">
+                <option value="cash">Cash / Savings</option>
+                <option value="receivable">Receivable</option>
+                <option value="card">Credit Card</option>
+                <option value="inv">Investment</option>
+                <option value="crypto">Crypto</option>
+                <option value="property">Property / Home</option>
+                <option value="loan">Loan / Mortgage</option>
+                <option value="other">Other Asset</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Current balance ($)</span>
+              <input type="number" id="f-balance" step="0.01" placeholder="0.00" required data-testid="input-account-balance" />
+            </label>
+            <label class="field" id="f-liquidity-field">
+              <span>Liquidity</span>
+              <select id="f-liquidity" data-testid="select-liquidity">
+                <option value="instant">Instant — same day</option>
+                <option value="days">2–5 days</option>
+                <option value="slow">1+ week / penalty</option>
+                <option value="pending">Pending (receivable)</option>
+                <option value="locked">Locked / restricted</option>
+              </select>
+              <span class="field-hint">How quickly you can access the money.</span>
+            </label>
+            <label class="field span-2" id="f-rate-field">
+              <span id="f-rate-label">Current APY (%)</span>
+              <input type="number" id="f-rate" step="0.01" min="0" max="30" placeholder="4.20" data-testid="input-account-rate" />
+              <span class="field-hint" id="f-rate-hint">Estimated interest updates instantly.</span>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn ghost" id="modal-cancel">Cancel</button>
+            <button type="submit" class="btn primary" data-testid="button-add-account-submit">Add account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="goal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goal-title">
+        <div class="modal-head">
+          <h2 id="goal-title">Add goal</h2>
+          <button class="icon-btn" id="goal-close" aria-label="Close" data-testid="button-goal-close">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <form id="goal-form">
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>Goal name</span>
+              <input type="text" id="f-goal-name" placeholder="e.g. Emergency fund" required data-testid="input-goal-name" />
+            </label>
+            <label class="field">
+              <span>Target amount ($)</span>
+              <input type="number" id="f-goal-target" step="0.01" min="0" placeholder="10000" required data-testid="input-goal-target" />
+            </label>
+            <label class="field">
+              <span>Already saved ($)</span>
+              <input type="number" id="f-goal-saved" step="0.01" min="0" placeholder="0" data-testid="input-goal-saved" />
+            </label>
+            <label class="field span-2">
+              <span>Monthly contribution ($)</span>
+              <input type="number" id="f-goal-monthly" step="1" min="0" placeholder="e.g. 250" data-testid="input-goal-monthly" />
+              <span class="field-hint">Used to estimate when you'll reach the goal.</span>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn ghost" id="goal-cancel">Cancel</button>
+            <button type="submit" class="btn primary" data-testid="button-goal-submit">Add goal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="modal-head">
+          <h2 id="settings-title">Settings</h2>
+          <button class="icon-btn" id="settings-close" aria-label="Close" data-testid="button-settings-close">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <form id="settings-form">
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>Your name</span>
+              <input type="text" id="f-username" maxlength="40" placeholder="e.g. Alex" data-testid="input-username" />
+              <span class="field-hint">Used for the greeting and your profile. Leave blank to hide it.</span>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn primary" data-testid="button-settings-save">Save</button>
+          </div>
+          <div class="danger-zone">
+            <span class="field-hint">Erases your accounts and goals, but keeps your name.</span>
+            <button type="button" class="btn ghost danger" id="btn-clear-all-settings" data-testid="button-clear-all-settings">Clear all financial data</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+/* ============================================================
+   Regent — Monarch-inspired finance dashboard prototype
+   Sample data only. Editable APY/APR per account.
+   ============================================================ */
+
+/* ---------- State ---------- */
+const state = {
+  view: 'dashboard',
+  userName: '',
+  accounts: [],
+  goals: [],
+};
+
+/* ---------- Helpers ---------- */
+const $ = (sel, root = document) => root.querySelector(sel);
+const viewRoot = $('#view-root');
+
+/* ---------- Persistence ----------
+   deploy_website rewrites this placeholder to the backend proxy path;
+   when running locally (no rewrite) fall back to the dev server. */
+const STORAGE_KEY = 'regent-finance-v1';
+
+let saveStatus = 'idle';
+const saveStatusText = {
+  idle: 'All changes saved',
+  saving: 'Saving…',
+  saved: 'Saved',
+  error: 'Offline — changes stay on this page',
+};
+
+function setSaveStatus(s) {
+  saveStatus = s;
+  const el = document.getElementById('save-status');
+  if (el) {
+    el.textContent = saveStatusText[s];
+    el.className = 'save-pill ' + s;
+    el.setAttribute('data-state', s);
+  }
+}
+
+let saveTimer = null;
+function scheduleSave() {
+  if (saveTimer) clearTimeout(saveTimer);
+  setSaveStatus('saving');
+  saveTimer = setTimeout(doSave, 600);
+}
+
+async function doSave() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      accounts: state.accounts,
+      goals: state.goals,
+      theme: document.documentElement.getAttribute('data-theme'),
+      userName: state.userName,
+    }));
+    setSaveStatus('saved');
+  } catch {
+    setSaveStatus('error');
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.accounts)) {
+        state.accounts = data.accounts.map((a) => ({
+          ...a,
+          inNetWorth: a.inNetWorth !== false,
+          liquidity: a.liquidity && LIQ[a.liquidity] ? a.liquidity : (LIQ_DEFAULT[a.type] || a.liquidity),
+        }));
+      }
+      if (typeof data.userName === 'string') state.userName = data.userName.trim().slice(0, 40);
+      if (Array.isArray(data.goals)) state.goals = data.goals.slice(0, 50);
+      if (data.theme === 'dark' || data.theme === 'light') {
+        document.documentElement.setAttribute('data-theme', data.theme);
+      }
+    }
+    setSaveStatus('idle');
+  } catch {
+    setSaveStatus('error');
+  }
+}
+
+/* ---------- Backup: export / import ---------- */
+function exportData() {
+  const payload = {
+    app: 'regent',
+    version: 1,
+    exported: new Date().toISOString(),
+    accounts: state.accounts,
+    goals: state.goals,
+    theme: document.documentElement.getAttribute('data-theme'),
+    userName: state.userName,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'regent-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+async function importData(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    const list = Array.isArray(data) ? data : data.accounts;
+    if (!Array.isArray(list) || !list.length) throw new Error('no accounts');
+    const types = ['cash', 'receivable', 'card', 'inv', 'loan', 'crypto', 'property', 'other'];
+    state.accounts = list.slice(0, 100).map((acc, i) => {
+      const type = types.includes(acc.type) ? acc.type : 'cash';
+      const bal = Number(acc.balance);
+      const rateEditable = type === 'cash' || type === 'card' || type === 'loan';
+      return {
+        id: typeof acc.id === 'string' && acc.id ? acc.id : 'acc-' + Date.now() + '-' + i,
+        name: String(acc.name || 'Account'),
+        institution: String(acc.institution || ''),
+        type,
+        balance: Number.isFinite(bal) ? Math.round(bal * 100) / 100 : 0,
+        rate: rateEditable ? clampRate(Number(acc.rate) || 0) : null,
+        liquidity: type === 'card' || type === 'loan' ? undefined : (LIQ[acc.liquidity] ? acc.liquidity : LIQ_DEFAULT[type]),
+        payment: type === 'card' || type === 'loan' ? Math.max(0, Number(acc.payment) || 0) : undefined,
+        inNetWorth: acc.inNetWorth !== false,
+      };
+    });
+    if (Array.isArray(data.goals)) {
+      state.goals = data.goals.slice(0, 50).map((g, i) => ({
+        id: typeof g.id === 'string' && g.id ? g.id : 'goal-' + Date.now() + '-' + i,
+        name: String(g.name || 'Goal'),
+        target: Math.max(0, Number(g.target) || 0),
+        saved: Math.max(0, Number(g.saved) || 0),
+        monthly: Math.max(0, Number(g.monthly) || 0),
+      }));
+    }
+    if (typeof data.userName === 'string') {
+      state.userName = data.userName.trim().slice(0, 40);
+      applyUserName();
+    }
+    if (data.theme === 'dark' || data.theme === 'light') {
+      document.documentElement.setAttribute('data-theme', data.theme);
+    }
+    render();
+    updateNavCount();
+    scheduleSave();
+  } catch {
+    alert('That file could not be read as a Regent backup.');
+  }
+  const input = document.getElementById('import-file');
+  if (input) input.value = '';
+}
+
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const fmtMoney = (n) => money.format(n);
+const fmtSigned = (n) => (n >= 0 ? '+' : '−') + money.format(Math.abs(n));
+const clampRate = (r) => Math.min(30, Math.max(0, r));
+
+const GROUPS = [
+  { type: 'cash', title: 'Cash & Savings', color: 'green' },
+  { type: 'receivable', title: 'Receivables', color: 'blue' },
+  { type: 'card', title: 'Credit Cards', color: 'red' },
+  { type: 'inv', title: 'Investments', color: 'blue' },
+  { type: 'crypto', title: 'Crypto', color: 'gold' },
+  { type: 'property', title: 'Property & Home', color: 'blue' },
+  { type: 'loan', title: 'Loans & Mortgages', color: 'gold' },
+  { type: 'other', title: 'Other Assets', color: 'slate' },
+];
+
+/* Liquidity — how quickly the money can be accessed */
+const LIQ = { instant: 'Instant', days: '2–5 days', slow: '1+ week', pending: 'Pending', locked: 'Locked' };
+const LIQ_ORDER = ['instant', 'days', 'slow', 'pending', 'locked'];
+const hasLiquidity = (a) => a.type !== 'card' && a.type !== 'loan';
+const liqOf = (a) =>
+  LIQ[a.liquidity]
+    ? a.liquidity
+    : ({ cash: 'instant', receivable: 'pending', inv: 'days', crypto: 'days', property: 'locked', other: 'locked' }[a.type] || 'locked');
+const LIQ_DEFAULT = { cash: 'instant', receivable: 'pending', inv: 'days', crypto: 'days', property: 'locked', other: 'locked' };
+
+const rateLabel = (a) => (a.type === 'cash' ? 'APY' : 'APR');
+const isRateEditable = (a) => a.type === 'cash' || a.type === 'card' || a.type === 'loan';
+const isInNetWorth = (a) => a.inNetWorth !== false; // default true
+
+const annualInterest = (a) =>
+  isRateEditable(a) ? (a.type === 'cash' ? a.balance * (a.rate / 100) : Math.abs(a.balance) * (a.rate / 100)) : 0;
+
+const totals = () => {
+  let netWorth = 0, cash = 0, debt = 0, inv = 0, earned = 0, cost = 0, liquid = 0, assets = 0, receivables = 0;
+  for (const a of state.accounts) {
+    const inNW = isInNetWorth(a);
+    if (inNW) netWorth += a.balance;
+    if (a.type === 'cash') {
+      cash += a.balance;
+      earned += annualInterest(a);
+      if (liqOf(a) === 'instant' || liqOf(a) === 'days') liquid += a.balance;
+    }
+    if (a.type === 'receivable') {
+      receivables += a.balance;
+      if (liqOf(a) === 'instant' || liqOf(a) === 'days') liquid += a.balance;
+    }
+    if (a.type === 'inv' || a.type === 'crypto' || a.type === 'property' || a.type === 'other') inv += a.balance;
+    if (a.type === 'card' || a.type === 'loan') { debt += a.balance; cost += annualInterest(a); }
+    if (a.balance > 0 && inNW) assets += a.balance;
+  }
+  const debtAbs = Math.abs(debt);
+  const debtToAsset = assets > 0 ? debtAbs / assets : (debtAbs > 0 ? Infinity : 0);
+  const liquidToDebt = debtAbs > 0 ? liquid / debtAbs : (liquid > 0 ? Infinity : 0);
+  return { netWorth, cash, inv, debt, earned, cost, liquid, receivables, assets, debtToAsset, liquidToDebt, netInterest: earned - cost };
+};
+
+/* ---------- Debt payoff & goals ---------- */
+const defaultPayment = (bal, apr) => Math.max(25, Math.round(bal * (apr / 100 / 12) + bal * 0.02));
+const paymentOf = (a) => (a.payment > 0 ? a.payment : defaultPayment(Math.abs(a.balance), a.rate || 0));
+const monthYear = (mFromNow) =>
+  new Date(new Date().getFullYear(), new Date().getMonth() + mFromNow, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+function payoffSchedule() {
+  const rows = state.accounts
+    .filter((a) => a.type === 'card' || a.type === 'loan')
+    .map((a) => ({ id: a.id, name: a.name, institution: a.institution, bal: Math.abs(a.balance), apr: a.rate || 0, pay: paymentOf(a) }))
+    .map((d) => {
+      let bal = d.bal;
+      let m = 0;
+      let interest = 0;
+      const ok = d.pay > (d.bal * d.apr) / 100 / 12;
+      while (bal > 0 && m < 600) {
+        const i = (bal * d.apr) / 100 / 12;
+        interest += i;
+        bal = bal + i - d.pay;
+        m++;
+      }
+      return { ...d, months: bal > 0 ? null : m, interest: Math.round(interest * 100) / 100, ok };
+    });
+  const agg = [];
+  for (let m = 0; m <= 12; m++) {
+    let total = 0;
+    for (const r of rows) {
+      let bal = r.bal;
+      for (let i = 0; i < m; i++) bal = Math.max(0, bal + (bal * r.apr) / 100 / 12 - r.pay);
+      total += bal;
+    }
+    agg.push(total);
+  }
+  return { rows, agg };
+}
+
+const goalPct = (g) => (g.target > 0 ? Math.min(100, Math.round((g.saved / g.target) * 100)) : 0);
+const goalEta = (g) => {
+  if (g.saved >= g.target && g.target > 0) return 'Goal reached';
+  if (!g.monthly) return 'Add a monthly amount to see a date';
+  return 'On track for ' + monthYear(Math.ceil((g.target - g.saved) / g.monthly));
+};
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+const DEFAULT_PROFILE_NAME = 'My finances';
+const dataBadge = () => 'My data';
+const initialsOf = (name) =>
+  name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'JD';
+
+function applyUserName() {
+  document.querySelectorAll('.sidebar .badge-demo, .mobilebar .badge-demo').forEach((b) => (b.textContent = dataBadge()));
+  const el = document.querySelector('#user-name');
+  if (el) el.textContent = state.userName || DEFAULT_PROFILE_NAME;
+  const av = document.querySelector('.sidebar .avatar');
+  if (av) av.textContent = initialsOf(state.userName || DEFAULT_PROFILE_NAME);
+}
+
+/* ---------- Icons ---------- */
+const icons = {
+  wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h18v14"/><path d="M3 7v12a2 2 0 0 0 2 2h18v-6"/><path d="M17 9h6"/></svg>',
+  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 8h4.2a2 2 0 0 1 0 4H9.5zM9.5 12h4.7a2 2 0 0 1 0 4H9.5z"/><path d="M11 6v2M11 16v2"/></svg>',
+  tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  payoff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 13v4h-4"/></svg>',
+  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21 7H6"/></svg>',
+  tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="m17 2-5 5-5-5"/></svg>',
+  income: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
+  car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-4l2-5h14l2 5v4h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg>',
+  plane: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1Z"/></svg>',
+  dining: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h4l-4 9v11"/><path d="M6 2v7a3 3 0 0 0 6 0V2"/><path d="M9 2v20"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h8l-1 8 11-13h-8l1-7Z"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  arrowUp: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
+};
+
+const groupIcon = { cash: icons.wallet, receivable: icons.income, card: icons.card, inv: icons.chart, loan: icons.home, crypto: icons.coin, property: icons.home, other: icons.tag };
+
+/* ---------- Charts (inline SVG) ---------- */
+function areaChart(values, { stroke = 'var(--color-primary)', id }) {
+  const W = 640, H = 190, PAD = 10;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || Math.abs(max) || 1;
+  const x = (i) => PAD + (i * (W - PAD * 2)) / (values.length - 1);
+  const y = (v) => H - 18 - ((v - min) / range) * (H - 42);
+  const pts = values.map((v, i) => [x(i), y(v)]);
+  const line = pts.map(([px, py], i) => `${i === 0 ? 'M' : 'L'}${px.toFixed(1)},${py.toFixed(1)}`).join('');
+  const fill = `${line}L${(W - PAD).toFixed(1)},${H - 8}L${PAD},${H - 8}Z`;
+  const grid = [0.25, 0.5, 0.75]
+    .map((f) => `<line x1="${PAD}" x2="${W - PAD}" y1="${(H - 18 - f * (H - 42)).toFixed(1)}" y2="${(H - 18 - f * (H - 42)).toFixed(1)}" stroke="var(--color-divider)" stroke-width="1" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"/>`)
+    .join('');
+  const last = pts[pts.length - 1];
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Trend chart">
+    <defs><linearGradient id="grad-${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${stroke}" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="${stroke}" stop-opacity="0.02"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${fill}" fill="url(#grad-${id})"/>
+    <path d="${line}" fill="none" stroke="${stroke}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="4" fill="${stroke}" vector-effect="non-scaling-stroke"/>
+  </svg>`;
+}
+
+/* Net-worth history: 12 months ending at current net worth */
+function netWorthSeries(current) {
+  const factors = [0.882, 0.889, 0.897, 0.893, 0.906, 0.918, 0.911, 0.927, 0.938, 0.944, 0.953, 0.968, 1];
+  return factors.map((f) => current * f);
+}
+
+/* 12-month cash projection with monthly compounding at current APYs */
+function cashProjectionSeries() {
+  const series = [];
+  for (let m = 0; m <= 12; m++) {
+    let total = 0;
+    for (const a of state.accounts) {
+      if (a.type === 'cash') total += a.balance * Math.pow(1 + a.rate / 100 / 12, m);
+    }
+    series.push(total);
+  }
+  return series;
+}
+
+/* ---------- Render: shared pieces ---------- */
+function pageHead(title, sub, extraBadge) {
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="greeting">${esc(title)}</h1>
+      <div class="greeting-sub">${sub}${extraBadge ? extraBadge : ''}</div>
+    </div>
+    <div class="head-actions">
+      <span class="save-pill ${saveStatus}" id="save-status" role="status" data-testid="save-status">${saveStatusText[saveStatus]}</span>
+      ${addAccountBtn()}
+      <button class="icon-btn" id="btn-export" aria-label="Export a backup file" title="Export backup" data-testid="button-export">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-import" aria-label="Import a backup file" title="Import backup" data-testid="button-import">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 21h16"/></svg>
+      </button>
+      <input type="file" id="import-file" accept="application/json,.json" hidden />
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode" data-testid="button-theme-toggle"></button>
+      <button class="icon-btn" id="btn-settings" aria-label="Settings" title="Settings" data-testid="button-settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+function addAccountBtn() {
+  return `<button class="btn primary" id="btn-add-account" data-testid="button-add-account">${icons.plus}<span>Add account</span></button>`;
+}
+
+function themeBtnHTML() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return dark
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
+}
+
+/* ---------- Render: dashboard ---------- */
+function renderDashboard() {
+  const t = totals();
+  const nwSeries = netWorthSeries(t.netWorth);
+  const growth = t.netWorth - nwSeries[0];
+  const growthPct = Math.abs(nwSeries[0]) > 0 ? (growth / Math.abs(nwSeries[0])) * 100 : 0;
+  const proj = cashProjectionSeries();
+  const projGain = proj[12] - proj[0];
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const snapRows = GROUPS.map((g) => {
+    const rows = state.accounts.filter((a) => a.type === g.type);
+    const bal = rows.reduce((s, a) => s + a.balance, 0);
+    const dotColor = g.color === 'green' ? 'var(--color-primary)' : g.color === 'red' ? 'var(--color-negative)' : g.color === 'blue' ? 'var(--color-blue)' : 'var(--color-gold)';
+    return `<div class="snap-row">
+      <span class="dot" style="background:${dotColor}"></span>
+      <div><div class="snap-name">${esc(g.title)}</div><div class="snap-count">${rows.length} account${rows.length === 1 ? '' : 's'}</div></div>
+      <span class="snap-balance num">${fmtMoney(bal)}</span>
+    </div>`;
+  }).join('');
+
+  const goalSnap = state.goals.slice(0, 3).map((g) => `
+    <div class="goal-mini">
+      <div class="goal-mini-head"><span class="goal-name">${esc(g.name)}</span><span class="num" style="font-weight:600">${goalPct(g)}%</span></div>
+      <div class="progress"><div class="progress-fill" style="width:${goalPct(g)}%"></div></div>
+      <div class="goal-sub num">${fmtMoney(g.saved)} of ${fmtMoney(g.target)}</div>
+    </div>`).join('');
+
+  viewRoot.innerHTML = `
+    ${pageHead(`${greeting()}${state.userName ? ', ' + state.userName : ''}`, `<span>${esc(today)}</span>`, `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="kpi-grid">
+      <div class="card" style="grid-column: 1 / -1" data-testid="card-networth">
+        <div class="card-head">
+          <div>
+            <div class="kpi-value num" id="nw-value">${fmtMoney(t.netWorth)}</div>
+            <div class="kpi-label" style="margin-top:4px">Net worth</div>
+          </div>
+          <span class="kpi-delta ${growth >= 0 ? 'up' : 'down'}">${growth >= 0 ? icons.arrowUp : '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>'}<span class="num">${fmtSigned(growth)} (${Math.abs(growthPct).toFixed(1)}%) · past 12 mo</span></span>
+        </div>
+        <div class="chart-wrap">${areaChart(nwSeries, { id: 'nw' })}</div>
+        <div class="chart-legend"><span>12 months ago</span><span>Today</span></div>
+      </div>
+      <div class="card">
+        <div class="kpi-icon green">${icons.wallet}</div>
+        <div class="kpi-value num" style="font-size:var(--text-lg);margin-top:var(--space-3)">${fmtMoney(t.cash)}</div>
+        <div class="kpi-label" style="margin-top:2px">Cash &amp; savings</div>
+        <div class="kpi-label" style="margin-top:2px;color:var(--color-primary)">${fmtMoney(t.liquid)} instantly available</div>
+      </div>
+      <div class="card">
+        <div class="kpi-icon blue">${icons.chart}</div>
+        <div class="kpi-value num" style="font-size:var(--text-lg);margin-top:var(--space-3)">${fmtMoney(t.inv)}</div>
+        <div class="kpi-label" style="margin-top:2px">Investments &amp; assets</div>
+      </div>
+      <div class="card">
+        <div class="kpi-icon red">${icons.card}</div>
+        <div class="kpi-value num" style="font-size:var(--text-lg);margin-top:var(--space-3)">${fmtMoney(t.debt)}</div>
+        <div class="kpi-label" style="margin-top:2px">Credit cards &amp; loans</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card" data-testid="card-accounts-snapshot">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Accounts</div>
+            <div class="card-sub">${state.accounts.length} linked accounts</div>
+          </div>
+          <button class="link-btn" data-view-link="accounts">View accounts →</button>
+        </div>
+        ${snapRows}
+      </div>
+      <div class="card" data-testid="card-interest-outlook">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Interest outlook</div>
+            <div class="card-sub">Based on the APY / APR you set on each account</div>
+          </div>
+        </div>
+        <div class="outlook-grid">
+          <div class="outlook-item"><div class="o-label">Projected annual interest</div><div class="o-value pos num" data-bind="earned">${fmtMoney(t.earned)}</div></div>
+          <div class="outlook-item"><div class="o-label">Avg. per month</div><div class="o-value num" data-bind="earned-monthly">${fmtMoney(t.earned / 12)}</div></div>
+          <div class="outlook-item"><div class="o-label">Projected annual interest cost</div><div class="o-value neg num" data-bind="cost">${fmtMoney(t.cost)}</div></div>
+          <div class="outlook-item"><div class="o-label">Net interest impact</div><div class="o-value ${t.netInterest >= 0 ? 'pos' : 'neg'} num" data-bind="net-interest">${fmtSigned(t.netInterest)}</div></div>
+        </div>
+        <div class="chart-wrap">
+          ${areaChart(proj, { id: 'proj' })}
+          <div class="chart-legend"><span>Today: <span class="num" data-bind="cash-today">${fmtMoney(proj[0])}</span></span><span>In 12 mo: <span class="num" data-bind="cash-12mo">${fmtMoney(proj[12])}</span> <span style="color:var(--color-primary);font-weight:600">(+<span data-bind="proj-gain">${fmtMoney(projGain)}</span>)</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Goals</div>
+            <div class="card-sub">${state.goals.length} goal${state.goals.length === 1 ? '' : 's'} in progress</div>
+          </div>
+          <button class="link-btn" data-view-link="goals">View goals →</button>
+        </div>
+        ${goalSnap || '<div class="empty-note">No goals yet. Set one on the Goals page.</div>'}
+      </div>
+      <div class="card" data-testid="card-rate-tip">
+        <div class="card-head">
+          <div>
+            <div class="card-title">APY tracker</div>
+            <div class="card-sub">Edit rates any time — totals update instantly</div>
+          </div>
+        </div>
+        <div class="tx-list">
+          ${state.accounts.filter(isRateEditable).slice(0, 5).map((a) => `
+          <div class="tx-row" style="padding:var(--space-3) 0">
+            <span class="tx-icon kpi-icon ${a.type === 'cash' ? 'green' : 'red'}">${groupIcon[a.type]}</span>
+            <div><div class="tx-name">${esc(a.name)}</div><div class="tx-meta">${esc(a.institution)}</div></div>
+            <span class="tx-cat badge-demo num" style="margin-left:auto;color:${a.type === 'cash' ? 'var(--color-primary)' : 'var(--color-negative)'};background:${a.type === 'cash' ? 'var(--color-primary-soft)' : 'var(--color-negative-soft)'}">${a.rate.toFixed(2)}% ${rateLabel(a)}</span>
+            <span class="tx-amount num" style="color:${a.type === 'cash' ? 'var(--color-primary)' : 'var(--color-negative)'}">${a.type === 'cash' ? '+' : '−'}${fmtMoney(annualInterest(a))}/yr</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---------- Render: accounts ---------- */
+function rateCell(a) {
+  if (!isRateEditable(a)) {
+    return `<div class="rate-na" title="This account type doesn't earn a fixed rate">— N/A</div>`;
+  }
+  return `<div class="rate-box" data-rate-box="${a.id}">
+    <input class="rate-input num" type="number" step="0.01" min="0" max="30" value="${a.rate.toFixed(2)}"
+      data-rate-for="${a.id}" aria-label="Current ${rateLabel(a)} for ${esc(a.name)}" data-testid="input-rate-${a.id}" />
+    <span class="rate-suffix">% ${rateLabel(a)}</span>
+  </div>`;
+}
+
+function interestCell(a) {
+  if (!isRateEditable(a)) {
+    return `<div class="cell-interest"><span class="i-main" style="color:var(--color-text-faint)">—</span><span class="i-sub">market returns</span></div>`;
+  }
+  const annual = annualInterest(a);
+  if (a.type === 'cash') {
+    return `<div class="cell-interest">
+      <span class="i-main pos num" data-interest="${a.id}">${fmtMoney(annual)}</span>
+      <span class="i-sub num" data-interest-monthly="${a.id}">${fmtMoney(annual / 12)} / mo</span>
+    </div>`;
+  }
+  return `<div class="cell-interest">
+    <span class="i-main neg num" data-interest="${a.id}">−${fmtMoney(annual)}</span>
+    <span class="i-sub">est. cost / yr</span>
+  </div>`;
+}
+
+function liquiditySelect(a) {
+  const cur = liqOf(a);
+  return `<select class="liq-sel" data-liquidity-for="${a.id}" aria-label="Liquidity for ${esc(a.name)}" title="How quickly can you access this money?">
+    ${LIQ_ORDER.map((k) => `<option value="${k}"${k === cur ? ' selected' : ''}>${LIQ[k]}</option>`).join('')}
+  </select>`;
+}
+
+function netWorthToggle(a) {
+  const on = isInNetWorth(a);
+  return `<label class="nw-toggle" title="${on ? 'Included in net worth' : 'Excluded from net worth'}">
+    <input type="checkbox" data-nw-for="${a.id}" ${on ? 'checked' : ''} aria-label="Include ${esc(a.name)} in net worth" />
+    <span class="nw-slider"></span>
+    <span class="nw-label">${on ? 'In NW' : 'Out'}</span>
+  </label>`;
+}
+
+function accountRow(a) {
+  const g = GROUPS.find((g) => g.type === a.type) || GROUPS[GROUPS.length - 1];
+  return `<div class="account-row" data-row="${a.id}">
+    <span class="acct-icon ${g.color} cell-icon">${groupIcon[a.type] || icons.tag}</span>
+    <div class="cell-name">
+      <div class="acct-name">${esc(a.name)}</div>
+      <div class="acct-inst">${esc(a.institution)}</div>
+      ${hasLiquidity(a) ? liquiditySelect(a) : ''}
+    </div>
+    <div class="row-meta">
+      <div class="cell-rate">${rateCell(a)}</div>
+      <div class="cell-interest">${interestCell(a)}</div>
+    </div>
+    <span class="cell-nw">${netWorthToggle(a)}</span>
+    <span class="cell-balance">
+      <span class="bal-cur" aria-hidden="true">$</span>
+      <input class="balance-input num ${a.balance < 0 ? 'negative' : ''}" type="number" step="0.01" value="${a.balance.toFixed(2)}"
+        data-balance-for="${a.id}" aria-label="Balance for ${esc(a.name)}" data-testid="input-balance-${a.id}" />
+    </span>
+    <span class="cell-action"><button class="delete-btn visible" data-delete="${a.id}" aria-label="Delete ${esc(a.name)}" data-testid="button-delete-${a.id}">${icons.trash}</button></span>
+  </div>`;
+}
+
+function renderAccounts() {
+  const t = totals();
+  const groups = GROUPS.map((g) => {
+    const rows = state.accounts.filter((a) => a.type === g.type);
+    if (!rows.length) return '';
+    const bal = rows.reduce((s, a) => s + a.balance, 0);
+    const interest = rows.reduce((s, a) => s + annualInterest(a), 0);
+    const sub =
+      g.type === 'cash'
+        ? `est. <span class="pos" data-group-interest="cash">${fmtMoney(interest)}</span> interest / yr`
+        : g.type === 'card' || g.type === 'loan'
+          ? `est. <span class="neg" data-group-interest="${g.type}">−${fmtMoney(interest)}</span> cost / yr`
+          : `${rows.length} account${rows.length === 1 ? '' : 's'}`;
+    return `
+    <section class="account-group" data-testid="group-${g.type}">
+      <div class="group-head">
+        <h2 class="group-title">${esc(g.title)}</h2>
+        <div class="group-sub num"><span data-group-balance="${g.type}">${fmtMoney(bal)}</span> · ${sub}</div>
+      </div>
+      <div class="rows">
+        <div class="row-col-head"><span></span><span>Account</span><span>Current rate</span><span>Est. interest / yr</span><span>Net worth</span><span style="text-align:right">Balance</span><span></span></div>
+        ${rows.map(accountRow).join('')}
+      </div>
+    </section>`;
+  }).join('');
+
+  viewRoot.innerHTML = `
+    ${pageHead('Accounts', `<span>${state.accounts.length} account${state.accounts.length === 1 ? '' : 's'} · rates editable</span>`, `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="summary-strip">
+      <div class="summary-card">
+        <div class="s-label">Annual interest earned</div>
+        <div class="s-value pos num" data-bind="earned">${fmtMoney(t.earned)}</div>
+        <div class="s-foot num" data-bind="earned-monthly">${fmtMoney(t.earned / 12)} per month</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Annual interest cost</div>
+        <div class="s-value neg num" data-bind="cost">${fmtMoney(t.cost)}</div>
+        <div class="s-foot">Cards &amp; loans at current APRs</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Net interest impact</div>
+        <div class="s-value ${t.netInterest >= 0 ? 'pos' : 'neg'} num" data-bind="net-interest">${fmtSigned(t.netInterest)}</div>
+        <div class="s-foot">Per year, all rate accounts</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Blended cash APY</div>
+        <div class="s-value num" data-bind="blended">${(t.cash ? (t.earned / t.cash) * 100 : 0).toFixed(2)}%</div>
+        <div class="s-foot">Weighted across cash &amp; savings</div>
+      </div>
+    </div>
+    ${groups || '<div class="empty-note">No accounts yet. Add one to get started.</div>'}
+    ${state.accounts.length ? '<div class="clear-wrap"><button class="btn ghost" id="btn-clear-all" data-testid="button-clear-all">Clear all financial data</button></div>' : ''}`;
+}
+
+/* ---------- Render: interest (monthly summary) ---------- */
+function renderInterest() {
+  const t = totals();
+  const rateAccts = state.accounts.filter(isRateEditable);
+  const earning = rateAccts.filter((a) => a.type === 'cash');
+  const costing = rateAccts.filter((a) => a.type !== 'cash');
+  const intRow = (a) => {
+    const annual = annualInterest(a);
+    const pos = a.type === 'cash';
+    return `
+    <div class="tx-row" style="padding:var(--space-3) 0">
+      <span class="tx-icon kpi-icon ${pos ? 'green' : 'red'}">${groupIcon[a.type]}</span>
+      <div><div class="tx-name">${esc(a.name)}</div><div class="tx-meta">${esc(a.institution)} · ${a.rate.toFixed(2)}% ${rateLabel(a)} · ${fmtMoney(Math.abs(annual))} / yr</div></div>
+      <span class="tx-amount num" style="color:${pos ? 'var(--color-primary)' : 'var(--color-negative)'}">${pos ? '' : '−'}${fmtMoney(Math.abs(annual) / 12)}<span style="font-size:var(--text-xs);color:var(--color-text-muted)"> / mo</span></span>
+    </div>`;
+  };
+  const sec = (title, rows) => `
+    <section class="account-group">
+      <div class="group-head"><h2 class="group-title">${title}</h2></div>
+      <div class="rows">${rows.map(intRow).join('')}</div>
+    </section>`;
+  viewRoot.innerHTML = `
+    ${pageHead('Interest', '<span>Monthly interest at your current rates</span>', `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="summary-strip">
+      <div class="summary-card">
+        <div class="s-label">Interest earned / mo</div>
+        <div class="s-value pos num">${fmtMoney(t.earned / 12)}</div>
+        <div class="s-foot">${fmtMoney(t.earned)} per year</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Interest cost / mo</div>
+        <div class="s-value neg num">−${fmtMoney(t.cost / 12)}</div>
+        <div class="s-foot">${fmtMoney(t.cost)} per year</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Net / mo</div>
+        <div class="s-value num ${t.netInterest >= 0 ? 'pos' : 'neg'}">${fmtSigned(t.netInterest / 12)}</div>
+        <div class="s-foot">Earned minus cost</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Instant-access cash</div>
+        <div class="s-value num">${fmtMoney(t.liquid)}</div>
+        <div class="s-foot">Cash you can reach today</div>
+      </div>
+    </div>
+    ${earning.length ? sec('Earning interest', earning) : '<div class="empty-note">No interest-earning accounts yet. Add a cash or savings account with an APY.</div>'}
+    ${costing.length ? sec('Costing interest', costing) : ''}
+    ${rateAccts.length ? `<div class="empty-note" style="text-align:center">At your current rates: ${fmtMoney(t.earned)} earned and ${fmtMoney(t.cost)} in cost per year.</div>` : ''}`;
+}
+
+/* ---------- Render: goals ---------- */
+function renderGoals() {
+  const totalTarget = state.goals.reduce((s, g) => s + g.target, 0);
+  const totalSaved = state.goals.reduce((s, g) => s + g.saved, 0);
+  const pct = totalTarget > 0 ? Math.min(100, Math.round((totalSaved / totalTarget) * 100)) : 0;
+  const goalCard = (g) => `
+    <div class="card goal-card" data-goal-card="${g.id}">
+      <div class="goal-head">
+        <div class="goal-id">
+          <span class="kpi-icon green">${icons.target}</span>
+          <div>
+            <div class="goal-name">${esc(g.name)}</div>
+            <div class="goal-sub num">${fmtMoney(g.saved)} of ${fmtMoney(g.target)} · ${goalPct(g)}%</div>
+          </div>
+        </div>
+        <button class="delete-btn" data-goal-delete="${g.id}" aria-label="Delete goal" data-testid="button-goal-delete">${icons.trash}</button>
+      </div>
+      <div class="progress"><div class="progress-fill" style="width:${goalPct(g)}%"></div></div>
+      <div class="goal-foot">
+        <label class="mini-field"><span>Saved ($)</span><input type="number" step="0.01" min="0" value="${g.saved.toFixed(2)}" data-goal-saved-for="${g.id}" aria-label="Amount saved for ${esc(g.name)}" /></label>
+        <label class="mini-field"><span>Monthly ($)</span><input type="number" step="1" min="0" value="${g.monthly ? g.monthly : ''}" placeholder="0" data-goal-monthly-for="${g.id}" aria-label="Monthly contribution for ${esc(g.name)}" /></label>
+        <div class="goal-eta">${goalEta(g)}</div>
+      </div>
+    </div>`;
+  viewRoot.innerHTML = `
+    ${pageHead('Goals', `<span>Save toward the things that matter</span>`, `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="summary-strip">
+      <div class="summary-card"><div class="s-label">Goals</div><div class="s-value num">${state.goals.length}</div><div class="s-foot">Being tracked</div></div>
+      <div class="summary-card"><div class="s-label">Saved so far</div><div class="s-value pos num">${fmtMoney(totalSaved)}</div><div class="s-foot">Across all goals</div></div>
+      <div class="summary-card"><div class="s-label">Total target</div><div class="s-value num">${fmtMoney(totalTarget)}</div><div class="s-foot">Combined</div></div>
+      <div class="summary-card"><div class="s-label">Progress</div><div class="s-value num">${pct}%</div><div class="s-foot">Of everything you're saving for</div></div>
+    </div>
+    <div class="goal-actions"><button class="btn primary" id="btn-add-goal" data-testid="button-add-goal">${icons.plus}<span>Add goal</span></button></div>
+    ${state.goals.length
+      ? `<div class="goal-grid">${state.goals.map(goalCard).join('')}</div>`
+      : '<div class="empty-note">No goals yet. Add your first — an emergency fund, a trip, a new car.</div>'}`;
+}
+
+/* ---------- Render: debt payoff ---------- */
+function renderPayoff() {
+  const { rows, agg } = payoffSchedule();
+  const t = totals();
+  const maxMonths = rows.length ? Math.max(...rows.map((r) => r.months ?? Infinity)) : 0;
+  const totalInterest = rows.reduce((s, r) => s + r.interest, 0);
+  const monthly = rows.reduce((s, r) => s + r.pay, 0);
+  const ordered = [...rows].sort((a, b) => b.apr - a.apr);
+  const rank = (id) => ordered.findIndex((r) => r.id === id) + 1;
+  const debtCard = (r) => `
+    <div class="card payoff-card" data-payoff-card="${r.id}">
+      <div class="goal-head">
+        <div class="goal-id">
+          <span class="kpi-icon red">${icons.card}</span>
+          <div>
+            <div class="goal-name">${esc(r.name)} <span class="rank-chip">#${rank(r.id)} payoff</span></div>
+            <div class="goal-sub num">${fmtMoney(r.bal)} · ${r.apr.toFixed(2)}% APR · ${esc(r.institution)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="goal-foot">
+        <label class="mini-field"><span>Monthly payment ($)</span><input type="number" step="1" min="0" value="${r.pay}" data-payment-for="${r.id}" aria-label="Monthly payment for ${esc(r.name)}" data-testid="input-payment-${r.id}" /></label>
+        <div class="goal-eta">${r.ok
+          ? `Paid off <strong>${r.months ? monthYear(r.months) : '—'}</strong> · ${r.months} month${r.months === 1 ? '' : 's'} · ${fmtMoney(r.interest)} interest left` 
+          : 'Payment below monthly interest — balance will grow'}</div>
+      </div>
+    </div>`;
+  viewRoot.innerHTML = `
+    ${pageHead('Debt payoff', '<span>Forecast based on your balances, APRs, and payments</span>', `<span class="badge-demo">${dataBadge()}</span>`)}
+    ${rows.length ? `
+    <div class="summary-strip">
+      <div class="summary-card"><div class="s-label">Total debt</div><div class="s-value neg num">−${fmtMoney(Math.abs(t.debt))}</div><div class="s-foot">Cards &amp; loans</div></div>
+      <div class="summary-card"><div class="s-label">Monthly payments</div><div class="s-value num">${fmtMoney(monthly)}</div><div class="s-foot">At the amounts below</div></div>
+      <div class="summary-card"><div class="s-label">Debt-free by</div><div class="s-value pos num">${maxMonths === Infinity ? '—' : monthYear(maxMonths)}</div><div class="s-foot">${maxMonths === Infinity ? 'Raise a payment first' : maxMonths + ' months away'}</div></div>
+      <div class="summary-card"><div class="s-label">Interest remaining</div><div class="s-value neg num">−${fmtMoney(totalInterest)}</div><div class="s-foot">If you stay on track</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Debt over the next 12 months</div>
+          <div class="card-sub">Higher APRs are marked #1 — paying them first saves the most</div>
+        </div>
+      </div>
+      <div class="chart-wrap">${areaChart(agg, { id: 'payoff' })}</div>
+      <div class="chart-legend"><span>Today</span><span>In 12 mo</span></div>
+    </div>
+    <div class="goal-grid">${rows.map(debtCard).join('')}</div>`
+    : '<div class="empty-note">No cards or loans tracked. Add one on the Accounts page to see a payoff forecast.</div>'}`;
+}
+
+/* ---------- Render: allocation analysis ---------- */
+function renderAllocation() {
+  const t = totals();
+  const byGroup = GROUPS.map((g) => {
+    const rows = state.accounts.filter((a) => a.type === g.type && isInNetWorth(a));
+    const bal = rows.reduce((s, a) => s + a.balance, 0);
+    return { ...g, bal, count: rows.length };
+  }).filter((g) => g.count > 0 || Math.abs(g.bal) > 0);
+
+  const totalAbs = byGroup.reduce((s, g) => s + Math.abs(g.bal), 0) || 1;
+  const assetsOnly = byGroup.filter((g) => g.bal > 0);
+  const assetsSum = assetsOnly.reduce((s, g) => s + g.bal, 0) || 1;
+
+  const colorMap = {
+    green: 'var(--color-primary)',
+    red: 'var(--color-negative)',
+    blue: 'var(--color-blue)',
+    gold: 'var(--color-gold)',
+    slate: 'var(--color-text-muted)',
+  };
+
+  const bars = byGroup
+    .map((g) => {
+      const pct = ((Math.abs(g.bal) / totalAbs) * 100).toFixed(1);
+      const assetPct = g.bal > 0 ? ((g.bal / assetsSum) * 100).toFixed(1) : null;
+      return `
+      <div class="alloc-row">
+        <div class="alloc-label">
+          <span class="dot" style="background:${colorMap[g.color] || 'var(--color-text-muted)'}"></span>
+          <div>
+            <div class="snap-name">${esc(g.title)}</div>
+            <div class="snap-count">${g.count} account${g.count === 1 ? '' : 's'}${assetPct ? ` · ${assetPct}% of assets` : ''}</div>
+          </div>
+        </div>
+        <div class="alloc-bar-wrap">
+          <div class="alloc-bar" style="width:${pct}%;background:${colorMap[g.color] || 'var(--color-text-muted)'}"></div>
+        </div>
+        <div class="alloc-val num">${fmtMoney(g.bal)} <span class="alloc-pct">${pct}%</span></div>
+      </div>`;
+    })
+    .join('');
+
+  const liqBreakdown = LIQ_ORDER.map((k) => {
+    const rows = state.accounts.filter((a) => hasLiquidity(a) && liqOf(a) === k && isInNetWorth(a));
+    const bal = rows.reduce((s, a) => s + a.balance, 0);
+    return { key: k, label: LIQ[k], bal, count: rows.length };
+  }).filter((x) => x.count > 0);
+
+  const liqTotal = liqBreakdown.reduce((s, x) => s + Math.abs(x.bal), 0) || 1;
+  const liqBars = liqBreakdown
+    .map((x) => {
+      const pct = ((Math.abs(x.bal) / liqTotal) * 100).toFixed(1);
+      return `
+      <div class="alloc-row">
+        <div class="alloc-label"><div class="snap-name">${esc(x.label)}</div><div class="snap-count">${x.count} account${x.count === 1 ? '' : 's'}</div></div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${pct}%;background:var(--color-primary)"></div></div>
+        <div class="alloc-val num">${fmtMoney(x.bal)} <span class="alloc-pct">${pct}%</span></div>
+      </div>`;
+    })
+    .join('');
+
+  viewRoot.innerHTML = `
+    ${pageHead('Allocation', '<span>How your net-worth accounts are distributed</span>', `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="summary-strip">
+      <div class="summary-card"><div class="s-label">Net worth</div><div class="s-value num">${fmtMoney(t.netWorth)}</div><div class="s-foot">Included accounts only</div></div>
+      <div class="summary-card"><div class="s-label">Assets</div><div class="s-value pos num">${fmtMoney(t.assets)}</div><div class="s-foot">Positive balances</div></div>
+      <div class="summary-card"><div class="s-label">Debt</div><div class="s-value neg num">${fmtMoney(t.debt)}</div><div class="s-foot">Cards &amp; loans</div></div>
+      <div class="summary-card"><div class="s-label">Receivables</div><div class="s-value num">${fmtMoney(t.receivables)}</div><div class="s-foot">Pending inflows</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">By account type</div><div class="card-sub">Only accounts marked “In NW”</div></div></div>
+        ${bars || '<div class="empty-note">No accounts included in net worth yet.</div>'}
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">By liquidity</div><div class="card-sub">How quickly you can access the money</div></div></div>
+        ${liqBars || '<div class="empty-note">No liquid / semi-liquid accounts yet.</div>'}
+      </div>
+    </div>`;
+}
+
+/* ---------- Render: stats page ---------- */
+function renderStats() {
+  const t = totals();
+  const debtAbs = Math.abs(t.debt);
+  const dta = t.debtToAsset;
+  const ltd = t.liquidToDebt;
+  const fmtRatio = (r) => (r === Infinity ? '∞' : (r * 100).toFixed(1) + '%');
+  const fmtMult = (r) => (r === Infinity ? '∞×' : r.toFixed(2) + '×');
+
+  const excluded = state.accounts.filter((a) => !isInNetWorth(a));
+  const excludedBal = excluded.reduce((s, a) => s + a.balance, 0);
+
+  viewRoot.innerHTML = `
+    ${pageHead('Stats', '<span>Key ratios and liquidity health</span>', `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="summary-strip">
+      <div class="summary-card">
+        <div class="s-label">Debt-to-asset ratio</div>
+        <div class="s-value num ${dta > 0.5 ? 'neg' : 'pos'}">${fmtRatio(dta)}</div>
+        <div class="s-foot">Debt ÷ total assets (lower is better)</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Liquid-to-debt</div>
+        <div class="s-value num ${ltd < 1 ? 'neg' : 'pos'}">${fmtMult(ltd)}</div>
+        <div class="s-foot">Instant + 2–5 day assets ÷ debt</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Liquid assets</div>
+        <div class="s-value pos num">${fmtMoney(t.liquid)}</div>
+        <div class="s-foot">Can be used to pay debt quickly</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Net worth</div>
+        <div class="s-value num">${fmtMoney(t.netWorth)}</div>
+        <div class="s-foot">${excluded.length ? fmtMoney(excludedBal) + ' excluded' : 'All accounts included'}</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Balance sheet snapshot</div><div class="card-sub">Based on accounts marked for net worth</div></div></div>
+        <div class="outlook-grid">
+          <div class="outlook-item"><div class="o-label">Cash &amp; savings</div><div class="o-value num">${fmtMoney(t.cash)}</div></div>
+          <div class="outlook-item"><div class="o-label">Receivables</div><div class="o-value num">${fmtMoney(t.receivables)}</div></div>
+          <div class="outlook-item"><div class="o-label">Investments &amp; assets</div><div class="o-value num">${fmtMoney(t.inv)}</div></div>
+          <div class="outlook-item"><div class="o-label">Total debt</div><div class="o-value neg num">${fmtMoney(t.debt)}</div></div>
+          <div class="outlook-item"><div class="o-label">Annual interest earned</div><div class="o-value pos num">${fmtMoney(t.earned)}</div></div>
+          <div class="outlook-item"><div class="o-label">Annual interest cost</div><div class="o-value neg num">${fmtMoney(t.cost)}</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Liquidity notes</div><div class="card-sub">Only liquid assets can reliably pay off debt</div></div></div>
+        <div class="empty-note" style="text-align:left;padding:0">
+          <p style="margin-bottom:var(--space-3)"><strong>Liquid</strong> = Instant + 2–5 day access (cash, some receivables).</p>
+          <p style="margin-bottom:var(--space-3)"><strong>Pending</strong> receivables are tracked separately and do not count as investments.</p>
+          <p>Debt-to-asset above 50% or liquid-to-debt below 1× usually signals higher risk. Toggle accounts out of net worth on the Accounts page if you want them excluded from these ratios.</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---------- Render: placeholder views ---------- */
+function renderPlaceholder(title) {
+  viewRoot.innerHTML = `
+    ${pageHead(title, '<span>Personal edition</span>', `<span class="badge-demo">${dataBadge()}</span>`)}
+    <div class="card">
+      <div class="empty-state">
+        <span class="empty-badge">${icons.chart}</span>
+        <h3>${esc(title)} is not available yet</h3>
+        <p>This edition focuses on the dashboard and the APY tracker. Head back to Accounts to edit rates and see projected interest update in real time.</p>
+        <button class="btn primary" data-view-link="accounts">Go to Accounts</button>
+      </div>
+    </div>`;
+}
+
+/* ---------- Recalculate on rate edit (no re-render, keeps focus) ---------- */
+function recalc(changedId) {
+  const t = totals();
+  const a = state.accounts.find((x) => x.id === changedId);
+  if (a) {
+    const annual = annualInterest(a);
+    const iMain = document.querySelector(`[data-interest="${a.id}"]`);
+    if (iMain) {
+      if (a.type === 'cash') {
+        iMain.textContent = fmtMoney(annual);
+        const iSub = document.querySelector(`[data-interest-monthly="${a.id}"]`);
+        if (iSub) iSub.textContent = `${fmtMoney(annual / 12)} / mo`;
+      } else {
+        iMain.textContent = `−${fmtMoney(annual)}`;
+      }
+    }
+  }
+  /* Group headers */
+  for (const g of GROUPS) {
+    const rows = state.accounts.filter((x) => x.type === g.type);
+    const el = document.querySelector(`[data-group-balance="${g.type}"]`);
+    if (el) el.textContent = fmtMoney(rows.reduce((s, x) => s + x.balance, 0));
+    const gi = document.querySelector(`[data-group-interest="${g.type}"]`);
+    if (gi) {
+      const interest = rows.reduce((s, x) => s + annualInterest(x), 0);
+      gi.textContent = g.type === 'cash' ? fmtMoney(interest) : `−${fmtMoney(interest)}`;
+    }
+  }
+  /* Bindings shared between views */
+  const set = (sel, val) => { const el = document.querySelector(sel); if (el) el.textContent = val; };
+  set('[data-bind="earned"]', fmtMoney(t.earned));
+  set('[data-bind="earned-monthly"]', fmtMoney(t.earned / 12) + (state.view === 'accounts' ? ' per month' : ''));
+  set('[data-bind="cost"]', fmtMoney(t.cost));
+  set('[data-bind="net-interest"]', fmtSigned(t.netInterest));
+  const netEl = document.querySelector('[data-bind="net-interest"]');
+  if (netEl) netEl.classList.toggle('pos', t.netInterest >= 0), netEl.classList.toggle('neg', t.netInterest < 0);
+  set('[data-bind="blended"]', `${(t.cash ? (t.earned / t.cash) * 100 : 0).toFixed(2)}%`);
+  /* Dashboard-only chart */
+  const projWrap = document.querySelector('.chart-wrap');
+  if (state.view === 'dashboard' && projWrap) {
+    const proj = cashProjectionSeries();
+    projWrap.innerHTML = areaChart(proj, { id: 'proj' }) + `
+      <div class="chart-legend"><span>Today: <span class="num" data-bind="cash-today">${fmtMoney(proj[0])}</span></span><span>In 12 mo: <span class="num" data-bind="cash-12mo">${fmtMoney(proj[12])}</span> <span style="color:var(--color-primary);font-weight:600">(+<span data-bind="proj-gain">${fmtMoney(proj[12] - proj[0])}</span>)</span></span></div>`;
+  }
+}
+
+/* ---------- Routing & events ---------- */
+function render() {
+  switch (state.view) {
+    case 'dashboard': renderDashboard(); break;
+    case 'accounts': renderAccounts(); break;
+    case 'interest': renderInterest(); break;
+    case 'goals': renderGoals(); break;
+    case 'payoff': renderPayoff(); break;
+    case 'allocation': renderAllocation(); break;
+    case 'stats': renderStats(); break;
+    default: renderPlaceholder(state.view.charAt(0).toUpperCase() + state.view.slice(1));
+  }
+  document.querySelectorAll('.nav-item').forEach((n) => n.classList.toggle('active', n.dataset.view === state.view));
+  applyUserName();
+  document.querySelectorAll('.bn-item').forEach((n) => n.classList.toggle('active', n.dataset.view === state.view));
+  const tt = $('#theme-toggle');
+  if (tt) tt.innerHTML = themeBtnHTML();
+  viewRoot.parentElement.scrollTop = 0;
+}
+
+document.addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-view]');
+  if (nav) { state.view = nav.dataset.view; render(); return; }
+
+  const link = e.target.closest('[data-view-link]');
+  if (link) { state.view = link.dataset.viewLink; render(); return; }
+
+  if (e.target.closest('#btn-add-account')) { openModal(); return; }
+
+  if (e.target.closest('#btn-add-goal')) {
+    ['f-goal-name', 'f-goal-target', 'f-goal-saved', 'f-goal-monthly'].forEach((id) => { document.getElementById(id).value = ''; });
+    document.getElementById('goal-overlay').hidden = false;
+    document.getElementById('f-goal-name').focus();
+    return;
+  }
+  if (e.target.closest('#goal-close') || e.target.closest('#goal-cancel') || e.target.id === 'goal-overlay') {
+    document.getElementById('goal-overlay').hidden = true; return;
+  }
+
+  if (e.target.closest('#modal-close') || e.target.closest('#modal-cancel') || e.target.id === 'modal-overlay') {
+    closeModal(); return;
+  }
+
+  const del = e.target.closest('[data-delete]');
+  if (del) {
+    const id = del.dataset.delete;
+    const a = state.accounts.find((x) => x.id === id);
+    if (a && confirm(`Remove "${a.name}"?`)) {
+      state.accounts = state.accounts.filter((x) => x.id !== id);
+      render();
+      updateNavCount();
+      scheduleSave();
+    }
+    return;
+  }
+
+  const gdel = e.target.closest('[data-goal-delete]');
+  if (gdel) {
+    const id = gdel.dataset.goalDelete;
+    const g = state.goals.find((x) => x.id === id);
+    if (g && confirm(`Remove goal "${g.name}"?`)) {
+      state.goals = state.goals.filter((x) => x.id !== id);
+      render();
+      scheduleSave();
+    }
+    return;
+  }
+
+  if (e.target.closest('#btn-clear-all, #btn-clear-all-settings')) {
+    if (confirm('Clear all financial data? This removes your accounts and goals, but keeps your name and settings.')) {
+      state.accounts = [];
+      state.goals = [];
+      render();
+      updateNavCount();
+      scheduleSave();
+      closeModal();
+      closeSettings();
+    }
+    return;
+  }
+  if (e.target.closest('#btn-settings')) { openSettings(); return; }
+  if (e.target.closest('#settings-close') || e.target.id === 'settings-overlay') { closeSettings(); return; }
+  if (e.target.closest('#btn-export')) { exportData(); return; }
+  if (e.target.closest('#btn-import')) { document.getElementById('import-file').click(); return; }
+  if (e.target.closest('#theme-toggle')) { toggleTheme(); return; }
+});
+
+/* Rate input — live recalc without re-render (keeps typing focus) */
+document.addEventListener('input', (e) => {
+  const input = e.target.closest('[data-rate-for]');
+  if (!input) return;
+  const a = state.accounts.find((x) => x.id === input.dataset.rateFor);
+  if (!a) return;
+  const v = parseFloat(input.value);
+  a.rate = Number.isFinite(v) ? clampRate(v) : 0;
+  recalc(a.id);
+  scheduleSave();
+});
+
+/* Balance input — live recalc + save */
+document.addEventListener('input', (e) => {
+  const input = e.target.closest('[data-balance-for]');
+  if (!input) return;
+  const a = state.accounts.find((x) => x.id === input.dataset.balanceFor);
+  if (!a) return;
+  const v = parseFloat(input.value);
+  a.balance = Number.isFinite(v) ? v : 0;
+  input.classList.toggle('negative', a.balance < 0);
+  recalc(a.id);
+  scheduleSave();
+});
+
+/* ---------- Modal ---------- */
+const overlay = $('#modal-overlay');
+function openSettings() {
+  $('#f-username').value = state.userName;
+  document.getElementById('settings-overlay').hidden = false;
+}
+
+function closeSettings() {
+  const el = document.getElementById('settings-overlay');
+  if (el) el.hidden = true;
+}
+
+function openModal() {
+  overlay.hidden = false;
+  $('#f-name').focus();
+}
+function closeModal() {
+  overlay.hidden = true;
+  $('#add-account-form').reset();
+  syncRateField();
+}
+
+function syncRateField() {
+  const type = $('#f-type').value;
+  const rateInput = $('#f-rate');
+  const field = $('#f-rate-field');
+  const label = $('#f-rate-label');
+  const hint = $('#f-rate-hint');
+  const liqField = $('#f-liquidity-field');
+  const liqSel = $('#f-liquidity');
+  const debtType = type === 'card' || type === 'loan';
+  liqField.style.display = debtType ? 'none' : '';
+  if (!debtType) liqSel.value = LIQ_DEFAULT[type] || 'locked';
+  if (type === 'inv' || type === 'crypto' || type === 'property' || type === 'other' || type === 'receivable') {
+    label.textContent = type === 'receivable' ? 'Rate (N/A)' : 'Current APY (%)';
+    rateInput.disabled = true;
+    rateInput.value = '';
+    hint.textContent = type === 'receivable'
+      ? 'Receivables have no fixed rate — track expected inflow here.'
+      : 'This account type tracks the market — no fixed rate.';
+  } else {
+    label.textContent = type === 'cash' ? 'Current APY (%)' : 'Current APR (%)';
+    rateInput.disabled = false;
+    hint.textContent = 'Estimated interest updates instantly as you type.';
+  }
+  field.style.opacity = (type === 'inv' || type === 'receivable') ? '0.55' : '1';
+}
+
+$('#f-type').addEventListener('change', syncRateField);
+
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'import-file' && e.target.files && e.target.files[0]) {
+    importData(e.target.files[0]);
+    return;
+  }
+  const liq = e.target.closest('[data-liquidity-for]');
+  if (liq) {
+    const a = state.accounts.find((x) => x.id === liq.dataset.liquidityFor);
+    if (a) {
+      a.liquidity = liq.value;
+      scheduleSave();
+    }
+    return;
+  }
+  const nw = e.target.closest('[data-nw-for]');
+  if (nw) {
+    const a = state.accounts.find((x) => x.id === nw.dataset.nwFor);
+    if (a) {
+      a.inNetWorth = nw.checked;
+      render();
+      scheduleSave();
+    }
+    return;
+  }
+  const gs = e.target.closest('[data-goal-saved-for]');
+  if (gs) {
+    const g = state.goals.find((x) => x.id === gs.dataset.goalSavedFor);
+    if (g) {
+      const v = parseFloat(gs.value);
+      g.saved = Number.isFinite(v) && v >= 0 ? Math.round(v * 100) / 100 : 0;
+      render();
+      scheduleSave();
+    }
+    return;
+  }
+  const gm = e.target.closest('[data-goal-monthly-for]');
+  if (gm) {
+    const g = state.goals.find((x) => x.id === gm.dataset.goalMonthlyFor);
+    if (g) {
+      const v = parseFloat(gm.value);
+      g.monthly = Number.isFinite(v) && v >= 0 ? Math.round(v) : 0;
+      render();
+      scheduleSave();
+    }
+    return;
+  }
+  const pm = e.target.closest('[data-payment-for]');
+  if (pm) {
+    const a = state.accounts.find((x) => x.id === pm.dataset.paymentFor);
+    if (a) {
+      const v = parseFloat(pm.value);
+      a.payment = Number.isFinite(v) && v >= 0 ? Math.round(v) : 0;
+      render();
+      scheduleSave();
+    }
+  }
+});
+
+$('#add-account-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('#f-name').value.trim();
+  const institution = $('#f-institution').value.trim() || '—';
+  const type = $('#f-type').value;
+  const balance = parseFloat($('#f-balance').value);
+  const rate = parseFloat($('#f-rate').value);
+  if (!name || !Number.isFinite(balance)) return;
+  const signedBalance = type === 'card' || type === 'loan' ? -Math.abs(balance) : Math.abs(balance);
+  const acc = {
+    id: 'x' + Date.now().toString(36),
+    name,
+    institution,
+    type,
+    balance: signedBalance,
+    inNetWorth: true,
+  };
+  if (type === 'cash' || type === 'card' || type === 'loan') acc.rate = Number.isFinite(rate) ? clampRate(rate) : 0;
+  if (type !== 'card' && type !== 'loan') acc.liquidity = $('#f-liquidity-field').style.display === 'none' ? (LIQ_DEFAULT[type] || 'locked') : ($('#f-liquidity').value || LIQ_DEFAULT[type] || 'locked');
+  state.accounts.push(acc);
+  closeModal();
+  if (state.view !== 'accounts') state.view = 'accounts';
+  render();
+  updateNavCount();
+  scheduleSave();
+});
+
+$('#goal-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('#f-goal-name').value.trim();
+  const target = parseFloat($('#f-goal-target').value);
+  if (!name || !Number.isFinite(target) || target <= 0) return;
+  const saved = parseFloat($('#f-goal-saved').value);
+  const monthly = parseFloat($('#f-goal-monthly').value);
+  state.goals.push({
+    id: 'g' + Date.now().toString(36),
+    name,
+    target: Math.round(target * 100) / 100,
+    saved: Number.isFinite(saved) && saved > 0 ? Math.round(saved * 100) / 100 : 0,
+    monthly: Number.isFinite(monthly) && monthly > 0 ? Math.round(monthly) : 0,
+  });
+  document.getElementById('goal-overlay').hidden = true;
+  if (state.view !== 'goals') state.view = 'goals';
+  render();
+  scheduleSave();
+});
+
+$('#settings-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  state.userName = $('#f-username').value.trim().slice(0, 40);
+  applyUserName();
+  render();
+  scheduleSave();
+  closeSettings();
+});
+
+function updateNavCount() {
+  const chip = document.querySelector('[data-testid="nav-accounts-count"]');
+  if (chip) chip.textContent = state.accounts.length;
+}
+
+/* ---------- Theme ---------- */
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  const tt = $('#theme-toggle');
+  if (tt) {
+    tt.innerHTML = themeBtnHTML();
+    tt.setAttribute('aria-label', `Switch to ${next === 'dark' ? 'light' : 'dark'} mode`);
+  }
+  scheduleSave();
+}
+
+(function initTheme() {
+  const root = document.documentElement;
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+})();
+
+/* ---------- Boot ---------- */
+(async function boot() {
+  await loadState();
+  render();
+  updateNavCount();
+})();
+
+</script>
+  </body>
+</html>
